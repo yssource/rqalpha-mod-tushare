@@ -25,7 +25,23 @@ class TushareMod(AbstractMod):
 
     def start_up(self, env, mod_config):
         bundle_path = env.config.base.data_bundle_path
+        try:
+            import tushare
+        except ImportError:
+            six.print_(u"-" * 50)
+            six.print_(u">>> Missing tushare. Please run `pip install tushare`")
+            six.print_(u"-" * 50)
+            raise
+
         env.set_data_source(TushareKDataSource(bundle_path))
+
+        # register tushare api into rqalpha
+        from rqalpha.api.api_base import register_api
+        for name in dir(tushare):
+            obj = getattr(tushare, name)
+            if getattr(obj, "__module__", "").startswith("tushare"):
+                register_api(name, obj)
+
 
     def tear_down(self, code, exception=None):
         pass

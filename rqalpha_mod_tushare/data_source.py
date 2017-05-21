@@ -51,6 +51,7 @@ class TushareKDataSource(BaseDataSource):
             return bar_data.iloc[0].to_dict()
 
     def history_bars(self, instrument, bar_count, frequency, fields, dt, skip_suspended=True):
+    # def history_bars(self, instrument, bar_count, frequency, fields, dt, skip_suspended=True, include_now=False, adjust_type='pre', adjust_orig=None):
         if frequency != '1d' or not skip_suspended:
             return super(TushareKDataSource, self).history_bars(instrument, bar_count, frequency, fields, dt, skip_suspended)
 
@@ -66,7 +67,7 @@ class TushareKDataSource(BaseDataSource):
                 fields = [fields]
             fields = [field for field in fields if field in bar_data.columns]
 
-            return bar_data[fields].as_matrix()
+            return bar_data[fields].as_matrix().flatten()
 
     def available_data_range(self, frequency):
         return date(2005, 1, 1), date.today() - relativedelta(days=1)
